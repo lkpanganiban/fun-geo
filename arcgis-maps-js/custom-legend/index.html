@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>ArcGIS Map with OpenStreetMap and Legend</title>
+    <style>
+        html, body, #viewDiv {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+        }
+
+        #legendDiv {
+            background-color: white;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .legend-image {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            background-color: #ccc;
+        }
+    </style>
+    <link rel="stylesheet" href="https://js.arcgis.com/4.25/esri/themes/light/main.css" />
+    <script src="https://js.arcgis.com/4.25/"></script>
+</head>
+<body>
+    <div id="viewDiv"></div>
+    <script>
+        require([
+            "esri/Map",
+            "esri/views/MapView",
+            "esri/layers/WebTileLayer",
+            "esri/widgets/Expand",
+            "esri/widgets/Widget",
+            "esri/widgets/Legend",
+        ], function(Map, MapView, WebTileLayer, Expand, Widget, Legend) {
+            // Create a WebTileLayer with OpenStreetMap tiles
+            var osmLayer = new WebTileLayer({
+                urlTemplate: "https://{subDomain}.tile.openstreetmap.org/{level}/{col}/{row}.png",
+                subDomains: ["a", "b", "c"],
+                copyright: "© OpenStreetMap contributors"
+            });
+
+            // Create the map
+            var map = new Map({
+                layers: [osmLayer]
+            });
+
+            
+            // Create the view
+            var view = new MapView({
+                container: "viewDiv",
+                map: map,
+                zoom: 3,
+                center: [0, 0]
+            });
+            var legendDiv = document.createElement("div");
+            legendDiv.id = "legendDiv";
+            legendDiv.innerHTML = `
+                <h3>Legend</h3>
+                <div class="legend-item">
+                    <div class="legend-image"><img src="/images/city.png" width="16px" height="16px"></div>
+                    <span>Cities</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-image"><img src="/images/river.png" width="16px" height="16px"></div>
+                    <span>Rivers</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-image"><img src="/images/mountain.png" width="16px" height="16px"></div>
+                    <span>Mountains</span>
+                </div>
+            `;
+
+            // Create an Expand widget to contain the legend
+            var expandWidget = new Expand({
+                expandIconClass: "esri-icon-legend",
+                view: view,
+                content: legendDiv
+            });
+            view.ui.add(expandWidget, "top-right");
+
+          });
+    </script>
+</body>
+</html>
